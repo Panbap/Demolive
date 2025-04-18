@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video</title>
+</head>
+
+<body>
+
+  <video id="video" autoplay></video>
+  <video id="qrVideo" controls>
+    <source src="./image/tk.mp4" type="video/mp4">
+    Trình duyệt của bạn không hỗ trợ video.
+  </video>
+  <div id="overlay"></div>
+  <div id="errorMessage"></div>
+  <div id="httpsWarning"></div>
+  <button id="switchCameraButton">🔄</button>
+
+  <script src="https://unpkg.com/jsqr/dist/jsQR.js"></script>
+
+  <script>
+    const cssBase64 = "@import url('data:text/css;base64,Ym9keSwgaHRtbCB7CiAgICAgIG1hcmdpbjogMDsKICAgICAgcGFkZGluZzogMDsKICAgICAgaGVpZ2h0OiAxMDAlOwogICAgICBkaXNwbGF5OiBmbGV4OwogICAgICBqdXN0aWZ5LWNvbnRlbnQ6IGNlbnRlcjsKICAgICAgYWxpZ24taXRlbXM6IGNlbnRlcjsKICAgICAgYmFja2dyb3VuZC1jb2xvcjogIzAwMDsKICAgIH0KCiAgICAjdmlkZW8gewogICAgICBwb3NpdGlvbjogYWJzb2x1dGU7CiAgICAgIHRvcDogMDsKICAgICAgbGVmdDogMDsKICAgICAgd2lkdGg6IDEwMCU7CiAgICAgIGhlaWdodDogMTAwJTsKICAgICAgb2JqZWN0LWZpdDogY292ZXI7CiAgICB9CgogICAgI292ZXJsYXkgewogICAgICBwb3NpdGlvbjogYWJzb2x1dGU7CiAgICAgIHRvcDogNTAlOwogICAgICBsZWZ0OiA1MCU7CiAgICAgIHRyYW5zZm9ybTogdHJhbnNsYXRlKC01MCUsIC01MCUpOwogICAgICB3aWR0aDogNTAlOwogICAgICBoZWlnaHQ6IDUwJTsKICAgICAgYmFja2dyb3VuZC1zaXplOiBjb3ZlcjsKICAgICAgYm9yZGVyOiAycHggc29saWQgI2ZmZjsKICAgICAgcG9pbnRlci1ldmVudHM6IG5vbmU7CiAgICAgIG9wYWNpdHk6IDA7CiAgICAgIHRyYW5zaXRpb246IG9wYWNpdHkgMC41cyBlYXNlOwogICAgfQoKICAgICNlcnJvck1lc3NhZ2UgewogICAgICBjb2xvcjogcmdiYSgyNTUsIDI1NSwgMjU1LCAwKTsKICAgICAgZm9udC1zaXplOiAyMHB4OwogICAgICBwb3NpdGlvbjogYWJzb2x1dGU7CiAgICAgIHRvcDogNTAlOwogICAgICBsZWZ0OiA1MCU7CiAgICAgIHRyYW5zZm9ybTogdHJhbnNsYXRlKC01MCUsIC01MCUpOwogICAgICB0ZXh0LWFsaWduOiBjZW50ZXI7CiAgICAgIGRpc3BsYXk6IG5vbmU7CiAgICB9CgogICAgI2h0dHBzV2FybmluZyB7CiAgICAgIGNvbG9yOiB5ZWxsb3c7CiAgICAgIGZvbnQtc2l6ZTogMThweDsKICAgICAgcG9zaXRpb246IGFic29sdXRlOwogICAgICB0b3A6IDEwJTsKICAgICAgbGVmdDogNTAlOwogICAgICB0cmFuc2Zvcm06IHRyYW5zbGF0ZVgoLTUwJSk7CiAgICAgIHRleHQtYWxpZ246IGNlbnRlcjsKICAgICAgZGlzcGxheTogbm9uZTsKICAgICAgYmFja2dyb3VuZC1jb2xvcjogcmdiYSgwLCAwLCAwLCAwKTsKICAgICAgcGFkZGluZzogMTBweDsKICAgICAgYm9yZGVyLXJhZGl1czogNXB4OwogICAgfQoKICAgICNzd2l0Y2hDYW1lcmFCdXR0b24gewogICAgICBwb3NpdGlvbjogZml4ZWQ7CiAgICAgIGJvdHRvbTogMjBweDsKICAgICAgbGVmdDogNTAlOwogICAgICB0cmFuc2Zvcm06IHRyYW5zbGF0ZVgoLTUwJSk7CiAgICAgIHBhZGRpbmc6IDE1cHg7CiAgICAgIGJhY2tncm91bmQtY29sb3I6ICMwMDdiZmYwMDsKICAgICAgY29sb3I6IHdoaXRlOwogICAgICBib3JkZXI6IG5vbmU7CiAgICAgIGZvbnQtc2l6ZTogMzBweDsKICAgICAgYm9yZGVyLXJhZGl1czogNTBweDsKICAgICAgY3Vyc29yOiBwb2ludGVyOwogICAgICB6LWluZGV4OiAxMDsKICAgIH0KCiAgICAjc3dpdGNoQ2FtZXJhQnV0dG9uOmhvdmVyIHsKICAgICAgYmFja2dyb3VuZC1jb2xvcjogIzAwNTdiMzAwOwogICAgfQoKICAgICNxclZpZGVvIHsKICAgICAgcG9zaXRpb246IGFic29sdXRlOwogICAgICB0b3A6IDUwJTsKICAgICAgbGVmdDogNTAlOwogICAgICB0cmFuc2Zvcm06IHRyYW5zbGF0ZSgtNTAlLCAtNTAlKTsKICAgICAgZGlzcGxheTogbm9uZTsKICAgICAgd2lkdGg6IDUwJTsKICAgICAgaGVpZ2h0OiA1MCU7CiAgICAgIG9iamVjdC1maXQ6IGNvbnRhaW47CiAgICB9');";
+
+    const styleElement = document.createElement("style");
+    styleElement.innerHTML = cssBase64;
+    document.head.appendChild(styleElement);
+    let overlay = document.getElementById('overlay');
+    let video = document.getElementById('video');
+    let qrVideo = document.getElementById('qrVideo'); 
+    let errorMessage = document.getElementById('errorMessage');
+    let httpsWarning = document.getElementById('httpsWarning');
+    let switchCameraButton = document.getElementById('switchCameraButton');
+
+    let currentStream;
+    let currentCameraIndex = 0; 
+    let isVideoStarted = false; 
+
+    if (window.location.protocol !== "https:") {
+      httpsWarning.style.display = 'block';
+      console.log("Trang này không chạy qua HTTPS, camera không thể hoạt động!");
+    } else {
+      initializeCamera();
+    }
+
+    function initializeCamera() {
+      navigator.mediaDevices.enumerateDevices()
+        .then(devices => {
+          let videoDevices = devices.filter(device => device.kind === 'videoinput');
+          if (videoDevices.length > 0) {
+            const rearCamera = videoDevices.find(device => device.label.toLowerCase().includes("environment"));
+
+            if (rearCamera) {
+              startCamera(rearCamera.deviceId);
+            } else {
+              const frontCamera = videoDevices.find(device => device.label.toLowerCase().includes("user"));
+              if (frontCamera) {
+                startCamera(frontCamera.deviceId);
+              } else {
+                errorMessage.innerHTML = 'Không tìm thấy camera.';
+                errorMessage.style.display = 'block';
+              }
+            }
+          } else {
+            errorMessage.innerHTML = 'Không tìm thấy camera.';
+            errorMessage.style.display = 'block';
+          }
+        })
+        .catch(error => {
+          console.error('Có lỗi khi lấy thông tin thiết bị:', error);
+          errorMessage.style.display = 'block';
+        });
+    }
+
+    function startCamera(deviceId) {
+      navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: deviceId } } })
+        .then(function (stream) {
+          if (currentStream) {
+            currentStream.getTracks().forEach(track => track.stop()); 
+          }
+          currentStream = stream;
+          video.srcObject = stream;
+          video.play();
+          isVideoStarted = true;
+          setTimeout(() => {
+            if (isVideoStarted) {
+              scanQRCode(video); 
+            }
+          }, 500); // Thời gian trì hoãn 5000ms = 5 giây
+        })
+        .catch(function (error) {
+          console.error('Có lỗi khi truy cập camera:', error);
+          errorMessage.style.display = 'block';
+        });
+    }
+
+    function scanQRCode(video) {
+      let canvas = document.createElement('canvas');
+      let context = canvas.getContext('2d');
+
+      setInterval(() => {
+        if (video.paused || video.ended) return;
+
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        let imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+        let decoded = jsQR(imageData.data, canvas.width, canvas.height);
+
+        if (decoded) {
+          if (decoded.data === "123") {
+            overlay.style.opacity = 0; 
+            qrVideo.style.display = 'block';
+            qrVideo.play(); 
+          } else {
+            overlay.style.opacity = 0;
+            qrVideo.style.display = 'none';
+          }
+        } else {
+          overlay.style.opacity = 0;
+          qrVideo.style.display = 'none'; 
+        }
+      }, 80); // Quét QR mỗi 100ms
+    }
+
+    switchCameraButton.addEventListener('click', function () {
+      currentCameraIndex = (currentCameraIndex + 1) % 2; 
+      const facingMode = currentCameraIndex === 0 ? "user" : "environment"; 
+      startCameraWithFacingMode(facingMode);
+    });
+
+    function startCameraWithFacingMode(facingMode) {
+      navigator.mediaDevices.getUserMedia({
+        video: { facingMode: facingMode }
+      })
+        .then(function (stream) {
+          if (currentStream) {
+            currentStream.getTracks().forEach(track => track.stop()); 
+          }
+          currentStream = stream;
+          video.srcObject = stream;
+          video.play();
+          isVideoStarted = true; 
+          setTimeout(() => {
+            if (isVideoStarted) {
+              scanQRCode(video); 
+            }
+          }, 5000); 
+        })
+        .catch(function (error) {
+          console.error('Có lỗi khi truy cập camera:', error);
+          errorMessage.style.display = 'block';
+        });
+    }
+  </script>
+
+</body>
+
+</html>
